@@ -201,3 +201,27 @@ brew services stop rabbitmq
 ---
 
 _For questions or issues, refer to the troubleshooting section above or the main project README._
+
+## Observability Stack
+
+The observability stack provides distributed tracing, metrics collection, and visualization for local development.
+
+### Services
+
+- **Jaeger UI**: http://localhost:16686 — Distributed trace visualization
+- **Prometheus**: http://localhost:9090 — Metrics storage and querying
+- **Grafana**: http://localhost:3000 — Unified dashboard (no login required)
+
+### Architecture
+
+- OTel Collector receives traces and metrics from services via OTLP/gRPC on port 4317
+- Collector exports traces to Jaeger and metrics to Prometheus
+- Grafana queries both Jaeger and Prometheus as datasources
+- Pre-configured dashboard "ParkirPintar Services" shows request rate, latency, error rate, and runtime metrics
+
+### Accessing Dashboards
+
+1. Open http://localhost:3000 (Grafana)
+2. Select "ParkirPintar Services" dashboard
+3. Use the `service_name` dropdown to filter by service
+4. For detailed traces, open http://localhost:16686 (Jaeger)

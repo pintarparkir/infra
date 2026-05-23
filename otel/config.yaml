@@ -8,17 +8,38 @@ processors:
   batch:
     timeout: 5s
 
+connectors:
+  spanmetrics:
+    histogram:
+      explicit:
+        buckets: [10ms, 50ms, 100ms, 250ms, 500ms, 1s, 2s, 5s, 10s]
+    dimensions:
+      - name: http.method
+      - name: http.status_code
+      - name: rpc.method
+      - name: rpc.grpc.status_code
+
 exporters:
   debug:
     verbosity: basic
+
+  otlp/jaeger:
+    endpoint: jaeger:4317
+    tls:
+      insecure: true
+
+  prometheus:
+    endpoint: "0.0.0.0:8889"
+    namespace: parkir
 
 service:
   pipelines:
     traces:
       receivers: [otlp]
       processors: [batch]
-      exporters: [debug]
+      exporters: [debug, otlp/jaeger, spanmetrics]
+
     metrics:
-      receivers: [otlp]
+      receivers: [otlp, spanmetrics]
       processors: [batch]
-      exporters: [debug]
+      exporters: [debug, prometheus]
